@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+require 'fileutils'
+name = ARGV[0]
+if FileTest.directory?(name)
+	exit(0)
+end
+fp = File.new(name,"r")
+set = fp.read.split
+fp.close
+code = ""
+set.each do |s|
+	code << "#{s} "
+end
+if code =~ /#include <cstdio> int main\(\)\{ return 0; \}/
+	FileUtils.rm(name)
+end

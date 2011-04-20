@@ -1,0 +1,96 @@
+#!/usr/bin/ruby
+
+require 'fileutils'
+
+def find_option_from_source(option, source)
+	if source == nil
+		return nil
+	end
+	source.each_line do |s|
+		if s =~ option
+			words = s.split
+			return words[1].downcase
+		end
+	end
+	return nil
+end
+
+def modify_avail(avail_dir, problem_name)
+	read_path = avail_dir + "/availprob"
+	write_path = avail_dir + "/avail_tmp"
+	read_fp = File.new(read_path)
+	write_fp = File.new(write_path, 'w')
+	read_fp.each do |line|
+		line = line.chomp
+		write_fp.puts(line) if line != problem_name
+	end
+	write_fp.close
+	read_fp.close
+	FileUtils.mv(write_path, read_path)
+end
+
+current_dir = "/tmp/cafetool"
+FileUtils.mkdir_p(current_dir)
+FileUtils.cd(current_dir)
+
+home_path = File.expand_path("~")
+source_dir = "#{ARGV[0]}"
+source_name = "#{ARGV[1]}"
+source_path = "#{source_dir}/#{source_name}"
+
+source_fp = File.new(source_path)
+source_content = source_fp.read
+source_fp.close
+
+problem_name = find_option_from_source(/^TASK:/, source_content)
+source_ext = find_option_from_source(/^LANG:/, source_content)
+
+# TODO : add support language
+language_list = ["c", "c++", "pas"]
+abort("Wrong LANG !") if !language_list.include?(source_ext)
+
+cafe_path = home_path + "/cafe_grader/judge"
+problem_home = "#{cafe_path}/ev/#{problem_name}"
+abort("Testdata not found") if !FileTest.exist?("#{problem_home}")
+script_dir = "#{problem_home}/script"
+std_script_dir = "#{cafe_path}/scripts/std-script"
+
+scripts = Dir[std_script_dir + '/*']
+copied = []
+scripts.each do |s|
+	fname = File.basename(s)
+	next if FileTest.directory?(s)
+    if !FileTest.exist?("#{script_dir}/#{fname}")
+    	copied << fname
+		FileUtils.cp(s, "#{script_dir}")
+	end
+end
+
+ENV['PROBLEM_HOME'] = problem_home
+system("#{script_dir}/judge #{source_ext} #{source_path} > /dev/null 2>&1")
+copied.each do |s|
+	FileUtils.rm("#{problem_home}/script/#{s}")
+end
+
+compilemsg_fp = File.new("#{current_dir}/test-result/compiler_message")
+puts compilemsg_fp.read
+compilemsg_fp.close
+
+result_path = "#{current_dir}/test-result/comment"
+if FileTest.exist?(result_path)
+	result_fp = File.new(result_path)
+	result_content = result_fp.readline
+	result_fp.close
+	puts result_content
+	if (result_content =~ /^P*$/)
+		# if problemset has been installed
+		modify_avail(home_path + "/cafe_grader/cafetool/data", problem_name)
+		FileUtils.mkdir_p("#{source_dir}/complete")
+		FileUtils.mv(source_path,source_dir + "/complete")
+		puts "PASSED : source code has been moved to 'complete' directory."
+	end
+else
+	puts "Compilation error"
+end
+FileUtils.remove_dir("#{current_dir}/test-result")
+FileUtils.remove_dir("#{current_dir}/sandbox")

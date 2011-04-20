@@ -1,0 +1,12 @@
+#!/bin/bash
+# [Gedit Tool]
+# Name=cafetool
+# Shortcut=<Control>e
+# Languages=c,cpp,pascal
+# Applicability=local
+# Output=output-panel
+# Input=nothing
+# Save-files=document
+
+
+../script/engine $GEDIT_CURRENT_DOCUMENT_DIR $GEDIT_CURRENT_DOCUMENT_NAME

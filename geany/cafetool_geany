@@ -1,0 +1,3 @@
+#!/bin/bash
+
+../script/engine $1 $2

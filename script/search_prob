@@ -1,0 +1,29 @@
+#!/bin/bash
+
+probname=$(zenity --entry --title="Cafetool" --width=200 --text="Enter problem name :")
+flag=0
+pathtask=~/cafe_grader/cafeprompt/task
+for i in $pathtask/*.txt; do
+	out=$(grep -i -w -o $probname$ $i)
+	if test "$out" != ""; then
+		flag=1
+		acroread ${i/.txt}.pdf > /dev/null &
+	fi
+done
+
+workspace=$(cat ~/cafe_grader/cafetool/config/workspace)
+source_code=$workspace/$probname.cpp
+if test ! -e $source_code; then
+(	echo "/*"
+	echo "TASK: $probname"
+	echo "LANG: C++"
+	echo "*/"
+	echo
+	echo "#include <cstdio>"
+	echo
+	echo "int main(){"
+	echo
+	echo "	return 0;"
+	echo "}"	) >> $source_code
+fi
+geany $source_code > /dev/null &

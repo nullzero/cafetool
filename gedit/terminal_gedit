@@ -1,0 +1,13 @@
+#!/bin/bash
+# [Gedit Tool]
+# Comment=Open a terminal in the document location
+# Name=terminal
+# Shortcut=<Control>t
+# Languages=
+# Applicability=local
+# Input=nothing
+# Output=nothing
+# Save-files=document
+
+
+gnome-terminal --working-directory=$GEDIT_CURRENT_DOCUMENT_DIR &

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd ~/cafe_grader/cafetool
+mkdir workspace
+mkdir data
+touch data/availprob
+current_dir=$(pwd)
+ln -s $current_dir/start_programming.desktop ~/Desktop/start_programming.desktop
+ln -s $current_dir/gedit/cafetool_gedit ~/.gnome2/gedit/tools/cafetool_gedit
+ln -s $current_dir/gedit/terminal_gedit ~/.gnome2/gedit/tools/terminal_gedit
+

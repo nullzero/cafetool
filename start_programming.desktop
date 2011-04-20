@@ -1,0 +1,7 @@
+[Desktop Entry]
+
+Type=Application
+Name=Start Programming
+Exec=cafe_grader/cafetool/script/start_program
+Icon=accessories-text-editor
+Terminal=false
