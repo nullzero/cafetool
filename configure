@@ -3,9 +3,19 @@
 cd ~/cafe_grader/cafetool
 mkdir workspace
 mkdir data
+mkdir config
+zenity --info --title="Cafetool" --text="Please select workspace directory."
+echo $(zenity --file-selection --title="Select workspace" --directory) > config/workspace
 touch data/availprob
 current_dir=$(pwd)
 ln -s $current_dir/start_programming.desktop ~/Desktop/start_programming.desktop
 ln -s $current_dir/gedit/cafetool_gedit ~/.gnome2/gedit/tools/cafetool_gedit
 ln -s $current_dir/gedit/terminal_gedit ~/.gnome2/gedit/tools/terminal_gedit
-
+if [[ $(ps -A) =~ gedit ]]; then
+	if zenity --question --text="You need to restart gedit.
+	Do you want to restart gedit now ?" --title="Cafetool" \
+	--ok-label="Yes" --cancel-label="No"; then
+		killall gedit
+		gedit &
+	fi
+fi
