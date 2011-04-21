@@ -86,6 +86,7 @@ if FileTest.exist?(result_path)
 		# if problemset has been installed
 		modify_avail(home_path + "/cafe_grader/cafetool/data", problem_name)
 		FileUtils.mkdir_p("#{source_dir}/complete")
+		# TODO : if /complete/source_path exist ?
 		FileUtils.mv(source_path,source_dir + "/complete")
 		puts "PASSED : source code has been moved to 'complete' directory."
 	end

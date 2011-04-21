@@ -1,4 +1,6 @@
 - Instruction for Geany
 - Link to cafe-grader website
-- problemset
 - fix LICENSE
+- fix duplicate problemname in engine
+- fix workspace !
+- fix search_prob (after cafeprompt finished !)
