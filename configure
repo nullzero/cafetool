@@ -6,7 +6,8 @@ mkdir data
 mkdir config
 mkdir workspace
 zenity --info --title="Cafetool" --text="Please select workspace directory.
-'~/cafe_grader/cafetool/workspace' is defualt."
+'~/cafe_grader/cafetool/workspace' is defualt.
+(Click Cancel to use defualt)"
 workspace=$(zenity --file-selection --title="Select workspace" --directory)
 if test "$workspace" = ""; then
 	workspace=$current_dir/workspace
