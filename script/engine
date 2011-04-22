@@ -67,7 +67,7 @@ scripts.each do |s|
 end
 
 ENV['PROBLEM_HOME'] = problem_home
-system("#{script_dir}/judge #{source_ext} #{source_path} > /dev/null 2>&1")
+`#{script_dir}/judge #{source_ext} #{source_path} > /dev/null 2>&1`
 copied.each do |s|
 	FileUtils.rm("#{problem_home}/script/#{s}")
 end
