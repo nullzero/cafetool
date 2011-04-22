@@ -1,6 +1,6 @@
 Installation :
-wget https://github.com/downloads/nullzero/cafetool/cafetool.installer
-bash cafetool.installer
+Save https://github.com/downloads/nullzero/cafetool/installer.exec to your computer
+Double-click it, choose 'Run' and following the steps
 
 Instruction (Gedit):
 1) Open your code with 'gedit' (C/C++)
