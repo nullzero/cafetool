@@ -29,6 +29,8 @@ def modify_avail(avail_dir, problem_name)
 	FileUtils.mv(write_path, read_path)
 end
 
+########################################################################
+
 cafetool_dir = File.expand_path(File.dirname(__FILE__) + '/..')
 
 current_dir = '/tmp/cafetool'
