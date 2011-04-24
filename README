@@ -1,5 +1,5 @@
 Installation :
-Save https://github.com/downloads/nullzero/cafetool/installer.exec to your computer
+Save http://goo.gl/Ke2fm
 Double-click it, choose 'Run' and follow the steps
 
 Instruction (Gedit):
@@ -9,7 +9,7 @@ Instruction (Gedit):
 
 Instruction (Geany):
 1) Go to 'Build > Set Build Commands'
-2) Change Command in 'Compile' section to './cafetool_geany "%d" "%f"' (without quote)
+2) Change Command in 'Compile' section to './cafetool_geany "%f"' (without quote)
    and change Working directory to 'geany' (without quote)
    ==> YOU MUST CHANGE THIS IF YOU DON'T USE DEFUALT WORKSPACE <==
 3) Change Command in 'Make Object' section to './search_prob' (without quote)

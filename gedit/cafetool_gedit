@@ -9,4 +9,4 @@
 # Save-files=document
 
 
-../script/engine $GEDIT_CURRENT_DOCUMENT_DIR $GEDIT_CURRENT_DOCUMENT_NAME
+../script/engine $GEDIT_CURRENT_DOCUMENT_NAME

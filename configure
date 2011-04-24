@@ -1,27 +1,42 @@
 #!/bin/bash
 
-cd ~/cafe_grader/cafetool
-current_dir=$(pwd)
-mkdir data
-mkdir config
-mkdir workspace
-zenity --info --title="Cafetool" --text="Please select workspace directory.
-'~/cafe_grader/cafetool/workspace' is defualt.
-(Click Cancel to use defualt)"
-workspace=$(zenity --file-selection --title="Select workspace" --directory)
-if test "$workspace" = ""; then
-	workspace=$current_dir/workspace
-fi
-echo $workspace > config/workspace
-touch data/availprob
-ln -s $current_dir/start_programming.desktop ~/Desktop/start_programming.desktop
-ln -s $current_dir/gedit/cafetool_gedit ~/.gnome2/gedit/tools/cafetool_gedit
-ln -s $current_dir/gedit/terminal_gedit ~/.gnome2/gedit/tools/terminal_gedit
-if [[ $(ps -A) =~ gedit ]]; then
-	if zenity --question --text="You need to restart gedit.
-Do you want to restart gedit now ?" --title="Cafetool" \
-	--ok-label="Yes" --cancel-label="No"; then
-		killall gedit
-		gedit &
+setting(){
+	mkdir $current_dir/data
+	mkdir $current_dir/config
+	mkdir $current_dir/workspace
+	touch data/availprob
+	mv /tmp/cafe_path $current_dir/config/path
+	ln -s $current_dir/start_programming.desktop ~/Desktop/start_programming.desktop
+	ln -s $current_dir/gedit/cafetool_gedit ~/.gnome2/gedit/tools/cafetool_gedit
+	ln -s $current_dir/gedit/terminal_gedit ~/.gnome2/gedit/tools/terminal_gedit
+}
+
+select_workspace(){
+	zenity --info --title="cafetool" --text="\
+Please choosing workspace directory.
+Workspace directory will contain your source codes.
+Make sure that you choose an accessible directory.
+"
+	workspace=$(zenity --file-selection --title="Choosing workspace" --directory \
+--filename="$current_dir/workspace/")
+	( ! (echo "test accessing" >> $workspace/test) 2> /dev/null ) && return 1
+	rm $workspace/test
+	echo "workspace: $workspace" >> $current_dir/config/path
+}
+
+killgedit(){
+	if [[ "$(ps -A)" =~ "gedit" ]]; then
+		if zenity --question --title="cafetool" --text="\
+You need to restart gedit.
+Do you want to restart gedit now ?" \
+--ok-label="Yes" --cancel-label="No"; then
+			killall gedit
+			gedit &
+		fi
 	fi
-fi
+}
+
+current_dir=$(dirname $0)
+setting
+while ! select_workspace; do :; done
+killgedit

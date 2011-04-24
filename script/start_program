@@ -18,10 +18,9 @@ def rmempty(name)
 	end
 end
 
-
-current_dir = File.expand_path("~") + "/cafe_grader/cafetool"
-system("geany #{current_dir}/data/availprob");
-workspace_fp = File.new(current_dir + "/config/workspace")
+cafetool_dir = File.expand_path(File.dirname(__FILE__) + '/..')
+`geany #{cafetool_dir}/data/availprob`
+workspace_fp = File.new(cafetool_dir + "/config/workspace")
 workspace_path = workspace_fp.readline
 workspace_fp.close
 workspace_path = workspace_path.chomp
