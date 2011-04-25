@@ -1,19 +1,13 @@
 Installation :
 Save http://goo.gl/Ke2fm
-Double-click it, choose 'Run' and follow the steps
+Double-click it, choose 'Run' and follow these steps
 
 Instruction (Gedit):
-1) Open your code with 'gedit' (C/C++)
-2) Press <Ctrl>e
-3) The result will appear in bottom pane
+- Open your code with 'gedit' (C/C++/PASCAL)
+- Press Ctrl-E for grading (The result will appear at the bottom pane)
 
 Instruction (Geany):
-1) Go to 'Build > Set Build Commands'
-2) Change Command in 'Compile' section to './cafetool_geany "%f"' (without quote)
-   and change Working directory to 'geany' (without quote)
-   ==> YOU MUST CHANGE THIS IF YOU DON'T USE DEFUALT WORKSPACE <==
-3) Change Command in 'Make Object' section to './search_prob' (without quote)
-   and change Working directory to 'script' (without quote)
-   ==> YOU MUST CHANGE THIS IF YOU DON'T USE DEFUALT WORKSPACE <==
-4) (OPTIONAL) Change Command in 'Make' section to 'gnome-terminal &' (without quote)
-5) (OPTIONAL) Set Keybinding by 'Edit > Preferences' and go to Keybindings tab
+- Open 'Start Programming' in your desktop
+- Press F10 for list problem names and press OK button
+- Press F9 for grading (The result will appear at the bottom pane)
+- Press F8 for run terminal
