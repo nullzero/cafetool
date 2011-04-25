@@ -33,7 +33,11 @@ module Utility
 		return nil
 	end
 	
-	def self.test
-		puts __FILE__
+	def self.mysql_connect(cafedir)
+		database = cafedir + '/web/config/database.yml'
+		db = find_info(/^database:/, database)
+		username = find_info(/^username:/, database)
+		password = find_info(/^password:/, database)
+		return Mysql.new('localhost', username, password, db)
 	end
 end

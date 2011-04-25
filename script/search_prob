@@ -1,26 +1,31 @@
 #!/usr/bin/ruby
 
 require 'fileutils'
+require 'mysql'
 require File.dirname(__FILE__) + '/utility.rb'
 
 cafetool_dir, path_config = Utility.initial(__FILE__)
-all_problem = Dir[ path_config['cafegrader:'] + '/judge/ev/*' ]
+workspace = path_config['workspace:']
+cafedir = path_config['cafegrader:']
+conn = Utility.mysql_connect(cafedir)
+rs = conn.query('SELECT name FROM problems')
 list = []
-all_problem.each do |dir|
-	# TODO : read prob from mysql !
-	next if !FileTest.directory?(dir)
-	list << File.basename(dir)
+rs.each do |s|
+	list << s
 end
-complete_problem = Dir[ path_config['workspace:'] + '/complete/*' ]
+complete_problem = Dir[workspace + '/complete/*']
 complete_problem.each do |file|
 	problem = File.basename(file, '.*')
 	list.delete(problem)
 end
 list.sort!
 liststr = '"' + list * '" "' + '"'
-selected = `zenity --title="Select problem" --width="300" --height="400" --list --text "Select problem : " --hide-header --column="" #{liststr}`
+selected = `zenity --title="Select problem" --width="300" \
+--height="400" --list --text "Select problem : " --hide-header \
+--column="" #{liststr}`
 selected.chomp!
-source_file = "#{path_config['workspace:']}/#{selected}.cpp"
+abort('Problem not found !') if selected == ""
+source_file = "#{workspace}/#{selected}.cpp"
 if !FileTest.exist?(source_file)
 	fp = File.new(source_file, 'w')
 	fp.puts "/*"
@@ -36,4 +41,9 @@ if !FileTest.exist?(source_file)
 	fp.puts "}"
 	fp.close
 end
+
+id = conn.query("SELECT id FROM problems WHERE name = '#{selected}'")\
+.fetch_row[0]
+conn.close
+`acroread #{cafedir}/web/data/tasks/#{id}/#{selected}.pdf &`
 `geany #{source_file} > /dev/null &`
