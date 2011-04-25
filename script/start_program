@@ -1,14 +1,11 @@
 #!/usr/bin/ruby
 
 require 'fileutils'
+require File.dirname(__FILE__) + '/utility.rb'
 
 def rmempty(name)
-	if FileTest.directory?(name)
-		exit(0)
-	end
-	fp = File.new(name,"r")
-	set = fp.read.split
-	fp.close
+	return if FileTest.directory?(name)
+	set = Utility.readfile(name).split
 	code = ""
 	set.each do |s|
 		code << "#{s} "
@@ -18,13 +15,11 @@ def rmempty(name)
 	end
 end
 
-cafetool_dir = File.expand_path(File.dirname(__FILE__) + '/..')
+########################################################################
+
+cafetool_dir, path_config = Utility.initial(__FILE__)
 `geany #{cafetool_dir}/data/availprob`
-workspace_fp = File.new(cafetool_dir + "/config/workspace")
-workspace_path = workspace_fp.readline
-workspace_fp.close
-workspace_path = workspace_path.chomp
-sources = Dir[workspace_path + '/*']
+sources = Dir[info_config["workspace:"] + '/*']
 sources.each do |s|
 	rmempty(s)
 end

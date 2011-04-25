@@ -1,29 +1,39 @@
-#!/bin/bash
+#!/usr/bin/ruby
 
-probname=$(zenity --entry --title="Cafetool" --width=200 --text="Enter problem name :")
-flag=0
-pathtask=~/cafe_grader/cafeprompt/task
-for i in $pathtask/*.txt; do
-	out=$(grep -i -w -o $probname$ $i)
-	if test "$out" != ""; then
-		flag=1
-		acroread ${i/.txt}.pdf > /dev/null &
-	fi
-done
+require 'fileutils'
+require File.dirname(__FILE__) + '/utility.rb'
 
-workspace=$(cat ~/cafe_grader/cafetool/config/workspace)
-source_code=$workspace/$probname.cpp
-if test ! -e $source_code; then
-(	echo "/*"
-	echo "TASK: $probname"
-	echo "LANG: C++"
-	echo "*/"
-	echo
-	echo "#include <cstdio>"
-	echo
-	echo "int main(){"
-	echo
-	echo "	return 0;"
-	echo "}"	) >> $source_code
-fi
-geany $source_code > /dev/null &
+cafetool_dir, path_config = Utility.initial(__FILE__)
+all_problem = Dir[ path_config['cafegrader:'] + '/judge/ev/*' ]
+list = []
+all_problem.each do |dir|
+	# TODO : read prob from mysql !
+	next if !FileTest.directory?(dir)
+	list << File.basename(dir)
+end
+complete_problem = Dir[ path_config['workspace:'] + '/complete/*' ]
+complete_problem.each do |file|
+	problem = File.basename(file, '.*')
+	list.delete(problem)
+end
+list.sort!
+liststr = '"' + list * '" "' + '"'
+selected = `zenity --title="Select problem" --width="300" --height="400" --list --text "Select problem : " --hide-header --column="" #{liststr}`
+selected.chomp!
+source_file = "#{path_config['workspace:']}/#{selected}.cpp"
+if !FileTest.exist?(source_file)
+	fp = File.new(source_file, 'w')
+	fp.puts "/*"
+	fp.puts "TASK: #{selected}"
+	fp.puts "LANG: C++"
+	fp.puts "*/"
+	fp.puts
+	fp.puts "#include <cstdio>"
+	fp.puts
+	fp.puts "int main(){"
+	fp.puts
+	fp.puts "	return 0;"
+	fp.puts "}"
+	fp.close
+end
+`geany #{source_file} > /dev/null &`

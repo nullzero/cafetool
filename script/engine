@@ -1,67 +1,24 @@
 #!/usr/bin/ruby
 
 require 'fileutils'
+require File.dirname(__FILE__) + '/utility.rb'
 
-def find_info(name, data)
-	if data == nil
-		return nil
-	end
-	data.each_line do |s|
-		if s =~ name
-			words = s.split
-			return words[1]
-		end
-	end
-	return nil
-end
-
-def modify_avail(avail_dir, problem_name)
-	read_path = avail_dir + '/availprob'
-	write_path = avail_dir + '/avail_tmp'
-	read_fp = File.new(read_path)
-	write_fp = File.new(write_path, 'w')
-	read_fp.each do |line|
-		line = line.chomp
-		write_fp.puts(line) if line != problem_name
-	end
-	write_fp.close
-	read_fp.close
-	FileUtils.mv(write_path, read_path)
-end
-
-########################################################################
-
-cafetool_dir = File.expand_path(File.dirname(__FILE__) + '/..')
-
+cafetool_dir, path_config = Utility.initial
+cafe_dir = path_config["cafegrader:"] + '/judge'
+source_dir = path_config["workspace:"]
 current_dir = '/tmp/cafetool'
 FileUtils.mkdir_p(current_dir)
 FileUtils.cd(current_dir)
-
-path_fp = File.new(cafetool_dir + '/config/path')
-path_content = path_fp.read
-path_fp.close
-
-cafe_dir = find_info(/^cafegrader:/, path_content) + '/judge'
-source_dir = find_info(/^workspace:/, path_content)
-
 source_name = "#{ARGV[0]}"
 source_path = "#{source_dir}/#{source_name}"
-
-source_fp = File.new(source_path)
-source_content = source_fp.read
-source_fp.close
-
-problem_name = find_info(/^TASK:/, source_content).downcase
-source_ext = find_info(/^LANG:/, source_content).downcase
-
+problem_name = Utility.find_info(/^TASK:/, source_path).downcase
+source_ext = Utility.find_info(/^LANG:/, source_path).downcase
 language_list = ['c', 'c++', 'pas']
 abort('Wrong LANG !') if !language_list.include?(source_ext)
-
 problem_home = "#{cafe_dir}/ev/#{problem_name}"
 abort('Testdata not found') if !FileTest.exist?(problem_home)
 script_dir = problem_home + '/script'
 std_script_dir = cafe_dir + '/scripts/std-script'
-
 scripts = Dir[std_script_dir + '/*']
 copied = []
 scripts.each do |s|
@@ -72,25 +29,17 @@ scripts.each do |s|
 		FileUtils.cp(s, script_dir)
 	end
 end
-
 ENV['PROBLEM_HOME'] = problem_home
 `#{script_dir}/judge #{source_ext} #{source_path} > /dev/null 2>&1`
 copied.each do |s|
 	FileUtils.rm("#{problem_home}/script/#{s}")
 end
-
-compilemsg_fp = File.new(current_dir + '/test-result/compiler_message')
-puts compilemsg_fp.read
-compilemsg_fp.close
-
+puts Utility.readfile(current_dir + '/test-result/compiler_message')
 result_path = current_dir + '/test-result/comment'
 if FileTest.exist?(result_path)
-	result_fp = File.new(result_path)
-	result_content = result_fp.readline
-	result_fp.close
-	puts result_content
-	if (result_content =~ /^P*$/)
-		modify_avail(cafetool_dir + '/data', problem_name)
+	result = Utility.readfile(result_path).lines.to_a[0]
+	puts result
+	if (result =~ /^P*$/)
 		FileUtils.mkdir_p(source_dir + '/complete')
 		FileUtils.mv(source_path,source_dir + '/complete')
 		puts "PASSED : source code has been moved to 'complete' directory."

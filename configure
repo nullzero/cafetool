@@ -1,5 +1,14 @@
 #!/bin/bash
 
+gemsql(){
+	[[  "$(gem query --local)" =~ "mysql" ]] && return
+	yes | zenity --progress --width 350 --pulsate --text=\
+"Downloading mysql
+" --title="cafeprompt" --no-cancel &
+	gksu gem install mysql
+	killall zenity
+}
+
 setting(){
 	mkdir $current_dir/data
 	mkdir $current_dir/config
@@ -40,6 +49,7 @@ Do you want to restart gedit now ?" \
 }
 
 current_dir=$(dirname $0)
+gemsql
 setting
 while ! select_workspace; do :; done
 killgedit
