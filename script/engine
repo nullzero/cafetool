@@ -3,7 +3,7 @@
 require 'fileutils'
 require File.dirname(__FILE__) + '/utility.rb'
 
-cafetool_dir, path_config = Utility.initial
+cafetool_dir, path_config = Utility.initial(__FILE__)
 cafe_dir = path_config["cafegrader:"] + '/judge'
 source_dir = path_config["workspace:"]
 current_dir = '/tmp/cafetool'
