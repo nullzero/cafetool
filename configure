@@ -34,7 +34,7 @@ geditconf(){
 ~/.gnome2/gedit/tools/cafetool_gedit
 	ln -s $current_dir/gedit/terminal_gedit \
 ~/.gnome2/gedit/tools/terminal_gedit
-	[ "$(pidof gedit)" == "" ] && return
+	[ "$(pidof gedit)" = "" ] && return
 	zenity --info --title="cafetool" --text="\
 You need to restart gedit.
 Save your file(s) and click OK button for restart"
