@@ -9,5 +9,5 @@ Instruction (Gedit):
 Instruction (Geany): <== RECOMMEND ==>
 - Open geany
 - Press F10 for list problem names and press OK button
-- Press F9 for grading (The result will appear in bottom pane)
+- Press F9 for grading (The result will appear at the bottom pane)
 - Press F8 for run terminal
