@@ -51,10 +51,11 @@ Save your file(s) and click OK button for restart"
 		$current_dir/geany/geanyconf
 		geany &
 	else
-		[ -e ~/.config/geany ] && return
-		geany &
-		while [ "$(pidof geany)" = "" ]; do :; done
-		killall geany
+		if [ ! -e ~/.config/geany ]; then
+			geany &
+			while [ "$(pidof geany)" = "" ]; do :; done
+			killall geany
+		fi
 		$current_dir/geany/geanyconf
 	fi
 }
