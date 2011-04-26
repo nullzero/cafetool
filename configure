@@ -29,6 +29,7 @@ Make sure that you choose an accessible directory.
 }
 
 geditconf(){
+	[ ! -e ~/.gnome2/gedit ] && mkdir -p ~/.gnome2/gedit/tools/
 	ln -s $current_dir/gedit/cafetool_gedit \
 ~/.gnome2/gedit/tools/cafetool_gedit
 	ln -s $current_dir/gedit/terminal_gedit \
@@ -50,6 +51,7 @@ Save your file(s) and click OK button for restart"
 		$current_dir/geany/geanyconf
 		geany &
 	else
+		[ -e ~/.config/geany ] && return
 		geany &
 		while [ "$(pidof geany)" = "" ]; do :; done
 		killall geany
