@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+require 'fileutils'
+require File.dirname(__FILE__) + '/../script/utility.rb'
+
+cafetool_dir, path_config = Utility.initial(__FILE__)
+geany_dir = File.expand_path('~/.config/geany')
+
+# geany.conf
+conf = geany_dir + '/geany.conf'
+FileUtils.cp(conf, geany_dir + '/geany.conf.backup')
+data = Utility.readfile(conf)
+fp = File.new(conf, 'w')
+data.each_line do |line|
+	next if line =~ /^NF_/ || line =~ /^\[build-menu\]/
+	fp.puts line
+end
+fp.puts "[build-menu]"
+fp.puts "NF_00_LB=_Terminal"
+fp.puts "NF_00_CM=gnome-terminal &"
+fp.puts "NF_00_WD="
+fp.puts "NF_01_LB="
+fp.puts "NF_01_CM="
+fp.puts "NF_01_WD="
+fp.puts "NF_02_LB=_Search Problem"
+fp.puts "NF_02_CM=./search_prob"
+fp.puts "NF_02_WD=#{cafetool_dir}/script"
+fp.puts "NF_03_LB="
+fp.puts "NF_03_CM="
+fp.puts "NF_03_WD="
+fp.close
+
+# keybindings.conf
+conf = geany_dir + '/keybindings.conf'
+FileUtils.cp(conf, geany_dir + '/keybindings.conf.backup')
+data = Utility.readfile(conf)
+fp = File.new(conf, 'w')
+data.each_line do |line|
+	if line =~ /^build_compile/
+		fp.puts 'build_compile=F3'
+	elsif line =~ /^build_link/
+		fp.puts 'build_link=F9'
+	elsif line =~ /^build_make/
+		fp.puts 'build_make=F8'
+	elsif line =~ /^build_makeowntarget/
+		fp.puts 'build_makeowntarget='
+	elsif line =~ /^build_makeobject/
+		fp.puts 'build_makeobject=F10'
+	else
+		fp.puts line
+	end
+end
+fp.close
+
+# C++
+conf = geany_dir + '/filedefs/filetypes.cpp'
+FileUtils.cp(conf, geany_dir + 'filedefs/filetypes.cpp.backup')
+data = Utility.readfile(conf)
+fp = File.new(conf, 'w')
+data.each_line do |line|
+	next if line =~ /^FT_/ || line =~ /^\[build-menu\]/
+	fp.puts line
+end
+fp.puts "[build-menu]"
+fp.puts "FT_00_LB=_Build"
+fp.puts "FT_00_CM=g++ -Wall -o \"%e\" \"%f\""
+fp.puts "FT_00_WD="
+fp.puts "FT_01_LB=_Cafetool"
+fp.puts "FT_01_CM=./cafetool_geany \"%f\""
+fp.puts "FT_01_WD=#{cafetool_dir}/geany"
+fp.puts "FT_02_LB="
+fp.puts "FT_02_CM="
+fp.puts "FT_02_WD="
+fp.close

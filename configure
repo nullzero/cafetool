@@ -10,17 +10,9 @@ gemsql(){
 }
 
 setting(){
-	mkdir $current_dir/data
 	mkdir $current_dir/config
 	mkdir $current_dir/workspace
-	touch data/availprob
 	mv /tmp/cafe_path $current_dir/config/path
-	ln -s $current_dir/start_programming.desktop \
-~/Desktop/start_programming.desktop
-	ln -s $current_dir/gedit/cafetool_gedit \
-~/.gnome2/gedit/tools/cafetool_gedit
-	ln -s $current_dir/gedit/terminal_gedit \
-~/.gnome2/gedit/tools/terminal_gedit
 }
 
 select_workspace(){
@@ -36,15 +28,30 @@ Make sure that you choose an accessible directory.
 	echo "workspace: $workspace" >> $current_dir/config/path
 }
 
-killgedit(){
-	if [ "$(pidof gedit)" != "" ]; then
-		if zenity --question --title="cafetool" --text="\
+geditconf(){
+	ln -s $current_dir/gedit/cafetool_gedit \
+~/.gnome2/gedit/tools/cafetool_gedit
+	ln -s $current_dir/gedit/terminal_gedit \
+~/.gnome2/gedit/tools/terminal_gedit
+	[ "$(pidof gedit)" == "" ] && return
+	if zenity --question --title="cafetool" --text="\
 You need to restart gedit.
 Do you want to restart gedit now ?" \
 --ok-label="Yes" --cancel-label="No"; then
-			killall gedit
-			gedit &
-		fi
+		killall gedit
+		gedit &
+	fi
+}
+
+geanyconf(){
+	$current_dir/geany/geanyconf
+	[ "$(pidof geany)" == "" ] && return
+	if zenity --question --title="cafetool" --text="\
+You need to restart geany.
+Do you want to restart geany now ?" \
+--ok-label="Yes" --cancel-label="No"; then
+		killall geany
+		geany &
 	fi
 }
 
@@ -52,4 +59,5 @@ current_dir=$(dirname $0)
 gemsql
 setting
 while ! select_workspace; do :; done
-killgedit
+[ $(type gedit) != "" ] && geditconf
+[ $(type geany) != "" ] && geanyconf
