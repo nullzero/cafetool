@@ -34,10 +34,9 @@ geditconf(){
 	ln -s $current_dir/gedit/terminal_gedit \
 ~/.gnome2/gedit/tools/terminal_gedit
 	[ "$(pidof gedit)" == "" ] && return
-	zenity --question --title="cafetool" --text="\
+	zenity --info --title="cafetool" --text="\
 You need to restart gedit.
-Save your file(s) and click OK button for restart" \
---ok-label="Yes" --cancel-label="No"
+Save your file(s) and click OK button for restart"
 	killall gedit
 	gedit &
 }
@@ -52,7 +51,7 @@ Save your file(s) and click OK button for restart"
 		geany &
 	else
 		geany &
-		while [ "$(pidof geany)" == "" ]; do :; done
+		while [ "$(pidof geany)" = "" ]; do :; done
 		killall geany
 		$current_dir/geany/geanyconf
 	fi
@@ -62,5 +61,5 @@ current_dir=$(dirname $0)
 gemsql
 setting
 while ! select_workspace; do :; done
-[ $(type gedit) != "" ] && geditconf
-[ $(type geany) != "" ] && geanyconf
+[ "$(type gedit)" != "" ] && geditconf
+[ "$(type geany)" != "" ] && geanyconf
