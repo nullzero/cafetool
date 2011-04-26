@@ -2,6 +2,7 @@
 
 module Utility
 	def self.readfile(path)
+		return nil if !FileTest.exist?(path)
 		path_fp = File.new(path)
 		data = path_fp.read
 		path_fp.close
@@ -24,9 +25,7 @@ module Utility
 	end
 	
 	def self.find_info_str(name, data)
-		if data == nil
-			return nil
-		end
+		return nil if data == nil
 		data.each_line do |s|
 			words = s.split
 			if words[0] =~ name

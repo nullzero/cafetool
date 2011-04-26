@@ -34,24 +34,27 @@ geditconf(){
 	ln -s $current_dir/gedit/terminal_gedit \
 ~/.gnome2/gedit/tools/terminal_gedit
 	[ "$(pidof gedit)" == "" ] && return
-	if zenity --question --title="cafetool" --text="\
+	zenity --question --title="cafetool" --text="\
 You need to restart gedit.
-Do you want to restart gedit now ?" \
---ok-label="Yes" --cancel-label="No"; then
-		killall gedit
-		gedit &
-	fi
+Save your file(s) and click OK button for restart" \
+--ok-label="Yes" --cancel-label="No"
+	killall gedit
+	gedit &
 }
 
 geanyconf(){
-	$current_dir/geany/geanyconf
-	[ "$(pidof geany)" == "" ] && return
-	if zenity --question --title="cafetool" --text="\
+	if [ "$(pidof geany)" != "" ]; then
+		zenity --info --title="cafetool" --text="\
 You need to restart geany.
-Do you want to restart geany now ?" \
---ok-label="Yes" --cancel-label="No"; then
+Save your file(s) and click OK button for restart"
 		killall geany
+		$current_dir/geany/geanyconf
 		geany &
+	else
+		geany &
+		while [ "$(pidof geany)" == "" ]; do :; done
+		killall geany
+		$current_dir/geany/geanyconf
 	fi
 }
 

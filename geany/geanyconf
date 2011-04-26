@@ -8,10 +8,11 @@ geany_dir = File.expand_path('~/.config/geany')
 
 # geany.conf
 conf = geany_dir + '/geany.conf'
-FileUtils.cp(conf, geany_dir + '/geany.conf.backup')
+FileUtils.cp(conf, geany_dir + '/geany.conf.backup') \
+if FileTest.exist?(conf)
 data = Utility.readfile(conf)
 fp = File.new(conf, 'w')
-data.each_line do |line|
+data != nil && data.each_line do |line|
 	next if line =~ /^NF_/ || line =~ /^\[build-menu\]/
 	fp.puts line
 end
@@ -32,32 +33,40 @@ fp.close
 
 # keybindings.conf
 conf = geany_dir + '/keybindings.conf'
-FileUtils.cp(conf, geany_dir + '/keybindings.conf.backup')
+FileUtils.cp(conf, geany_dir + '/keybindings.conf.backup') \
+if FileTest.exist?(conf)
 data = Utility.readfile(conf)
 fp = File.new(conf, 'w')
-data.each_line do |line|
-	if line =~ /^build_compile/
-		fp.puts 'build_compile=F3'
-	elsif line =~ /^build_link/
-		fp.puts 'build_link=F9'
-	elsif line =~ /^build_make/
-		fp.puts 'build_make=F8'
-	elsif line =~ /^build_makeowntarget/
-		fp.puts 'build_makeowntarget='
-	elsif line =~ /^build_makeobject/
-		fp.puts 'build_makeobject=F10'
-	else
-		fp.puts line
+lis = ["\[Bindings\]", "build_compile=", "build_link=", "build_make=",
+"build_makeowntarget=", "build_makeobject="]
+val = ['', 'F3', 'F9', 'F8', '', 'F10']
+firsttime = true
+data != nil && data.each_line do |line|
+	flag = true
+	for i in 0 ... lis.length
+		if line =~ /^#{lis[i]}/
+			fp.puts "#{lis[i]}#{val[i]}"
+			flag = false
+			firsttime = false
+			break
+		end
+	end
+	fp.puts line if flag
+end
+if firsttime
+	for i in 0 ... lis.length
+		fp.puts "#{lis[i]}#{val[i]}"
 	end
 end
 fp.close
 
 # C++
 conf = geany_dir + '/filedefs/filetypes.cpp'
-FileUtils.cp(conf, geany_dir + 'filedefs/filetypes.cpp.backup')
+FileUtils.cp(conf, geany_dir + '/filedefs/filetypes.cpp.backup') \
+if FileTest.exist?(conf)
 data = Utility.readfile(conf)
 fp = File.new(conf, 'w')
-data.each_line do |line|
+data != nil && data.each_line do |line|
 	next if line =~ /^FT_/ || line =~ /^\[build-menu\]/
 	fp.puts line
 end
