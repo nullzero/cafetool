@@ -18,7 +18,7 @@ end
 ########################################################################
 
 cafetool_dir, path_config = Utility.initial(__FILE__)
-`geany #{cafetool_dir}/data/availprob`
+`geany`
 sources = Dir[info_config["workspace:"] + '/*']
 sources.each do |s|
 	rmempty(s)

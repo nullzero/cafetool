@@ -8,19 +8,22 @@ module Utility
 		return data
 	end
 	
-	def self.initial(file)
-		plugin_dir = File.expand_path(File.dirname(file) + '/..')
-		path_config = readfile(plugin_dir + '/config/path')
+	def self.create_hash(data)
 		h = {}
-		path_config.each_line do |s|
+		data.each_line do |s|
 			words = s.split
 			h[ words[0] ] = words[1]
 		end
-		return plugin_dir, h
+		return h
 	end
 	
-	def self.find_info(name, path)
-		data = readfile(path)
+	def self.initial(file)
+		plugin_dir = File.expand_path(File.dirname(file) + '/..')
+		return plugin_dir, 
+				create_hash(readfile(plugin_dir + '/config/path'))
+	end
+	
+	def self.find_info_str(name, data)
 		if data == nil
 			return nil
 		end
@@ -29,15 +32,56 @@ module Utility
 			if words[0] =~ name
 				return words[1]
 			end
-		end	
+		end
 		return nil
 	end
 	
-	def self.mysql_connect(cafedir)
+	def self.find_info(name, path)
+		return find_info_str(name, readfile(path))
+	end
+end
+
+class SqlGrader
+	def initialize(cafedir)
 		database = cafedir + '/web/config/database.yml'
-		db = find_info(/^database:/, database)
-		username = find_info(/^username:/, database)
-		password = find_info(/^password:/, database)
-		return Mysql.new('localhost', username, password, db)
+		db = Utility.find_info(/^database:/, database)
+		username = Utility.find_info(/^username:/, database)
+		password = Utility.find_info(/^password:/, database)
+		@conn = Mysql.new('localhost', username, password, db)
+	end
+	
+	def close
+		@conn.close
+	end
+	
+	def query(str)
+		return @conn.query(str)
+	end
+	
+	def find_id(problem)
+		return self.query("SELECT id FROM problems WHERE name = \
+'#{problem}'").fetch_row[0]
+	end
+		
+	ALL = 0
+	AVAIL = 1
+	
+	def list_problem(option = ALL)
+		suffix = ''
+		suffix = " WHERE AVAIL = '1'" if option == AVAIL
+		rs = self.query("SELECT name FROM problems" + suffix)
+		list = []
+		rs.each do |s|
+			list << s.to_s
+		end
+		return list.sort
+	end
+	
+	def insert(name)
+		self.query("INSERT INTO problems(name, full_name, \
+full_score, date_added, available, test_allowed, output_only, \
+description_filename) VALUES('#{name}', '#{name}', '100', \
+'#{Time.new.strftime("%Y-%m-%d")}', '1', '1', '0', '#{name}.pdf')");
+		return self.find_id(name)
 	end
 end

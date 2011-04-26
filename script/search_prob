@@ -7,24 +7,19 @@ require File.dirname(__FILE__) + '/utility.rb'
 cafetool_dir, path_config = Utility.initial(__FILE__)
 workspace = path_config['workspace:']
 cafedir = path_config['cafegrader:']
-conn = Utility.mysql_connect(cafedir)
-rs = conn.query('SELECT name FROM problems')
-list = []
-rs.each do |s|
-	list << s
-end
+sqlgrader = SqlGrader.new(cafedir)
+list = sqlgrader.list_problem
 complete_problem = Dir[workspace + '/complete/*']
 complete_problem.each do |file|
 	problem = File.basename(file, '.*')
 	list.delete(problem)
 end
-list.sort!
 liststr = '"' + list * '" "' + '"'
 selected = `zenity --title="Select problem" --width="300" \
 --height="400" --list --text "Select problem : " --hide-header \
 --column="" #{liststr}`
 selected.chomp!
-abort('Problem not found !') if selected == ""
+abort('Abort !') if selected == ""
 source_file = "#{workspace}/#{selected}.cpp"
 if !FileTest.exist?(source_file)
 	fp = File.new(source_file, 'w')
@@ -42,8 +37,7 @@ if !FileTest.exist?(source_file)
 	fp.close
 end
 
-id = conn.query("SELECT id FROM problems WHERE name = '#{selected}'")\
-.fetch_row[0]
-conn.close
+id = sqlgrader.find_id(selected)
+sqlgrader.close
 `acroread #{cafedir}/web/data/tasks/#{id}/#{selected}.pdf &`
 `geany #{source_file} > /dev/null &`
