@@ -10,8 +10,8 @@ gemsql(){
 }
 
 setting(){
-	mkdir $current_dir/config
-	mkdir $current_dir/workspace
+	mkdir -p $current_dir/config
+	mkdir -p $current_dir/workspace
 	mv /tmp/cafe_path $current_dir/config/path
 }
 
@@ -30,9 +30,9 @@ Make sure that you choose an accessible directory.
 
 geditconf(){
 	[ ! -e ~/.gnome2/gedit ] && mkdir -p ~/.gnome2/gedit/tools/
-	ln -s $current_dir/gedit/cafetool_gedit \
+	ln -s -f $current_dir/gedit/cafetool_gedit \
 ~/.gnome2/gedit/tools/cafetool_gedit
-	ln -s $current_dir/gedit/terminal_gedit \
+	ln -s -f $current_dir/gedit/terminal_gedit \
 ~/.gnome2/gedit/tools/terminal_gedit
 	[ "$(pidof gedit)" = "" ] && return
 	zenity --info --title="cafetool" --text="\

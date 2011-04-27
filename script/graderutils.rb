@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-module Utility
+module GraderUtils
 	def self.readfile(path)
 		return nil if !FileTest.exist?(path)
 		path_fp = File.new(path)
@@ -40,12 +40,12 @@ module Utility
 	end
 end
 
-class SqlGrader
+class GraderSql
 	def initialize(cafedir)
 		database = cafedir + '/web/config/database.yml'
-		db = Utility.find_info(/^database:/, database)
-		username = Utility.find_info(/^username:/, database)
-		password = Utility.find_info(/^password:/, database)
+		db = GraderUtils.find_info(/^database:/, database)
+		username = GraderUtils.find_info(/^username:/, database)
+		password = GraderUtils.find_info(/^password:/, database)
 		@conn = Mysql.new('localhost', username, password, db)
 	end
 	

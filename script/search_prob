@@ -2,15 +2,15 @@
 
 require 'fileutils'
 require 'mysql'
-require File.dirname(__FILE__) + '/utility.rb'
+require File.dirname(__FILE__) + '/graderutils.rb'
 
-cafetool_dir, path_config = Utility.initial(__FILE__)
+cafetool_dir, path_config = GraderUtils.initial(__FILE__)
 workspace = path_config['workspace:']
 cafedir = path_config['cafegrader:']
 sources = Dir[workspace + '/*']
 sources.each do |name|
 	next if FileTest.directory?(name)
-	set = Utility.readfile(name).split
+	set = GraderUtils.readfile(name).split
 	code = ''
 	set.each do |s|
 		code << s + ' '
@@ -19,8 +19,8 @@ sources.each do |name|
 		FileUtils.rm(name)
 	end
 end
-sqlgrader = SqlGrader.new(cafedir)
-list = sqlgrader.list_problem
+sql = GraderSql.new(cafedir)
+list = sql.list_problem
 complete_problem = Dir[workspace + '/complete/*']
 complete_problem.each do |file|
 	problem = File.basename(file, '.*')
@@ -49,7 +49,7 @@ if !FileTest.exist?(source_file)
 	fp.close
 end
 
-id = sqlgrader.find_id(selected)
-sqlgrader.close
+id = sql.find_id(selected)
+sql.close
 `acroread #{cafedir}/web/data/tasks/#{id}/#{selected}.pdf &`
 `geany #{source_file} > /dev/null &`

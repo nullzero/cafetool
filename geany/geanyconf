@@ -1,21 +1,49 @@
 #!/usr/bin/ruby
 
 require 'fileutils'
-require File.dirname(__FILE__) + '/../script/utility.rb'
+require File.dirname(__FILE__) + '/../script/graderutils.rb'
 
-cafetool_dir, path_config = Utility.initial(__FILE__)
+cafetool_dir, path_config = GraderUtils.initial(__FILE__)
 geany_dir = File.expand_path('~/.config/geany')
+
+# keybindings.conf
+conf = geany_dir + '/keybindings.conf'
+FileUtils.cp(conf, geany_dir + '/keybindings.conf.backup') \
+if FileTest.exist?(conf)
+data = GraderUtils.readfile(conf)
+fp = File.new(conf, 'w')
+lis = ["\[Bindings\]", "build_compile=", "build_link=", "build_make=",
+"build_makeowntarget=", "build_makeobject="]
+val = ['', 'F3', 'F9', 'F8', '', 'F10']
+if data != nil
+	data.each_line do |line|
+		flag = true
+		for i in 0 ... lis.length
+			if line =~ /^#{lis[i]}/
+				fp.puts "#{lis[i]}#{val[i]}"
+				flag = false
+				break
+			end
+		end
+		fp.puts line if flag
+	end
+else
+	for i in 0 ... lis.length
+		fp.puts "#{lis[i]}#{val[i]}"
+	end
+end
+fp.close
 
 # geany.conf
 conf = geany_dir + '/geany.conf'
 FileUtils.cp(conf, geany_dir + '/geany.conf.backup') \
 if FileTest.exist?(conf)
-data = Utility.readfile(conf)
+data = GraderUtils.readfile(conf)
 fp = File.new(conf, 'w')
-data != nil && data.each_line do |line|
+data.each_line do |line|
 	next if line =~ /^NF_/ || line =~ /^\[build-menu\]/
 	fp.puts line
-end
+end if data != nil
 fp.puts "[build-menu]"
 fp.puts "NF_00_LB=_Terminal"
 fp.puts "NF_00_CM=gnome-terminal &"
@@ -31,45 +59,16 @@ fp.puts "NF_03_CM="
 fp.puts "NF_03_WD="
 fp.close
 
-# keybindings.conf
-conf = geany_dir + '/keybindings.conf'
-FileUtils.cp(conf, geany_dir + '/keybindings.conf.backup') \
-if FileTest.exist?(conf)
-data = Utility.readfile(conf)
-fp = File.new(conf, 'w')
-lis = ["\[Bindings\]", "build_compile=", "build_link=", "build_make=",
-"build_makeowntarget=", "build_makeobject="]
-val = ['', 'F3', 'F9', 'F8', '', 'F10']
-firsttime = true
-data != nil && data.each_line do |line|
-	flag = true
-	for i in 0 ... lis.length
-		if line =~ /^#{lis[i]}/
-			fp.puts "#{lis[i]}#{val[i]}"
-			flag = false
-			firsttime = false
-			break
-		end
-	end
-	fp.puts line if flag
-end
-if firsttime
-	for i in 0 ... lis.length
-		fp.puts "#{lis[i]}#{val[i]}"
-	end
-end
-fp.close
-
 # C++
 conf = geany_dir + '/filedefs/filetypes.cpp'
 FileUtils.cp(conf, geany_dir + '/filedefs/filetypes.cpp.backup') \
 if FileTest.exist?(conf)
-data = Utility.readfile(conf)
+data = GraderUtils.readfile(conf)
 fp = File.new(conf, 'w')
-data != nil && data.each_line do |line|
+data.each_line do |line|
 	next if line =~ /^FT_/ || line =~ /^\[build-menu\]/
 	fp.puts line
-end
+end if data != nil
 fp.puts "[build-menu]"
 fp.puts "FT_00_LB=_Build"
 fp.puts "FT_00_CM=g++ -Wall -o \"%e\" \"%f\""

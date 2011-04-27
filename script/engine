@@ -1,18 +1,19 @@
 #!/usr/bin/ruby
 
 require 'fileutils'
-require File.dirname(__FILE__) + '/utility.rb'
+require File.dirname(__FILE__) + '/graderutils.rb'
 
-cafetool_dir, path_config = Utility.initial(__FILE__)
-cafe_dir = path_config["cafegrader:"] + '/judge'
-source_dir = path_config["workspace:"]
+cafetool_dir, path_config = GraderUtils.initial(__FILE__)
+cafe_dir = path_config['cafegrader:'] + '/judge'
+source_dir = path_config['workspace:']
 current_dir = '/tmp/cafetool'
 FileUtils.mkdir_p(current_dir)
 FileUtils.cd(current_dir)
 source_name = "#{ARGV[0]}"
 source_path = "#{source_dir}/#{source_name}"
-problem_name = Utility.find_info(/^TASK:/, source_path).downcase
-source_ext = Utility.find_info(/^LANG:/, source_path).downcase
+abort('Not running in workspace') if !FileTest.exist?(source_path)
+problem_name = GraderUtils.find_info(/^TASK:/, source_path).downcase
+source_ext = GraderUtils.find_info(/^LANG:/, source_path).downcase
 language_list = ['c', 'c++', 'pas']
 abort('Wrong LANG !') if !language_list.include?(source_ext)
 problem_home = "#{cafe_dir}/ev/#{problem_name}"
@@ -34,10 +35,10 @@ ENV['PROBLEM_HOME'] = problem_home
 copied.each do |s|
 	FileUtils.rm("#{problem_home}/script/#{s}")
 end
-puts Utility.readfile(current_dir + '/test-result/compiler_message')
+puts GraderUtils.readfile(current_dir + '/test-result/compiler_message')
 result_path = current_dir + '/test-result/comment'
 if FileTest.exist?(result_path)
-	result = Utility.readfile(result_path).lines.to_a[0]
+	result = GraderUtils.readfile(result_path).lines.to_a[0]
 	puts result
 	if (result =~ /^P*$/)
 		FileUtils.mkdir_p(source_dir + '/complete')
