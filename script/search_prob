@@ -51,5 +51,5 @@ end
 
 id = sql.find_id(selected)
 sql.close
-`acroread #{cafedir}/web/data/tasks/#{id}/#{selected}.pdf &`
-`geany #{source_file} > /dev/null &`
+system("acroread #{cafedir}/web/data/tasks/#{id}/#{selected}.pdf &");
+system("geany #{source_file} > /dev/null &");
